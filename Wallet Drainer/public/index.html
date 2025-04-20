@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wizard Airdrop</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-light: #f7f7f7;
+      --bg-dark: #121212;
+      --text-light: #000;
+      --text-dark: #fff;
+      --primary: #00e5ff;
+    }
+	
+	body {
+	  margin: 0;
+	  font-family: 'Chewy', cursive;
+	  background-color: var(--bg-dark);
+	  background-image: url('background2.jpg'); /* dark mode default */
+	  background-size: cover;
+	  background-position: center;
+	  background-repeat: no-repeat;
+	  color: var(--text-dark);
+	  transition: background 0.4s, color 0.4s;
+	}
+
+	body.light {
+	  background-color: var(--bg-light);
+	  background-image: url('background.jpg'); /* light mode */
+	  color: var(--text-light);
+	}
+
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.4);
+      min-height: 100vh;
+      padding: 40px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    header {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .icon-button, .connect-wallet {
+      background: white;
+      border: none;
+      border-radius: 9999px;
+      padding: 10px 15px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+
+	.airdrop-box {
+	  background: rgba(255, 255, 255, 0.1);
+	  backdrop-filter: blur(10px);
+	  border-radius: 20px;
+	  padding: 50px;
+	  width: 100%;
+	  max-width: 650px; /* Increased from 500px */
+	  color: inherit;
+	  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+	  margin: 0 auto; /* Center it */
+	}
+
+	
+	.icon-button,
+	.connect-wallet,
+	.btn {
+	  font-family: 'Chewy', cursive;
+	}
+
+
+    .step {
+      margin: 20px 0 8px;
+      font-size: 1.2rem;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 999px;
+      font-size: 1.1rem;
+      background-color: var(--primary);
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.02);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--primary);
+      color: #000;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-family: 'Chewy', cursive;
+      font-size: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 9999;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9998;
+    }
+
+    .modal {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+      padding: 25px 35px;
+      border-radius: 20px;
+      font-size: 1.3rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      animation: pop 0.3s ease-out;
+    }
+
+    body.light .modal {
+      background: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+	
+	#successModalBackdrop .modal {
+	  border: 2px solid var(--primary);
+	  background: rgba(0, 0, 0, 0.9);
+	  color: var(--text-dark);
+	  animation: bounceIn 0.4s ease;
+	}
+
+	@keyframes bounceIn {
+	  0% {
+		transform: scale(0.8);
+		opacity: 0;
+	  }
+	  60% {
+		transform: scale(1.05);
+		opacity: 1;
+	  }
+	  100% {
+		transform: scale(1);
+	  }
+	}
+
+  </style>
+</head>
+<body>
+  <div class="overlay">
+	<header>
+	  <!-- Logo on the left -->
+		<!-- Logo on the left -->
+		<div style="position: fixed; top: 0; left: 0; padding: 20px 30px; font-size: 3rem; color: white; font-family: 'Chewy', cursive; letter-spacing: 2px; text-shadow: 2px 2px 8px rgba(0, 255, 255, 0.6); z-index: 1000; background: linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%); width: 100%;" id="logo">
+		                  $WIZARD
+		</div>
+
+		<!-- Buttons on the right -->
+		<div style="position: fixed; top: 20px; right: 20px; display: flex; gap: 12px; align-items: center; z-index: 1000;">
+		  <button class="icon-button" onclick="window.open('https://www.reddit.com/r/wizardposting/', '_blank')" aria-label="Reddit">
+			<i class="fab fa-reddit-alien"></i>
+		  </button>
+		  <button class="icon-button" onclick="window.open('https://x.com/wizardonhl', '_blank')" aria-label="Twitter/X">
+			<i class="fab fa-x-twitter"></i>
+		  </button>
+			<button class="icon-button" id="themeToggle" aria-label="Toggle Theme">
+			  <i class="fas fa-moon"></i> <!-- default icon for dark mode -->
+			</button>
+		  <button class="connect-wallet" id="connectWallet">Connect Wallet</button>
+		</div>
+	</header>
+
+
+
+	<div class="airdrop-box">
+	  <!-- 🚀 Title -->
+	  <h2 style="font-size: 2rem;">🚀 Wizard Airdrop</h2>
+
+	  <!-- ✨ Magical Quote -->
+	  <p style="font-size: 1.1rem; margin-bottom: 25px; color: #ccc; font-style: italic;">
+		“A little spell goes a long way... especially when it’s $WIZARD.”
+	  </p>
+
+	  <!-- 🪄 Progress Bar -->
+	  <div style="background: rgba(255, 255, 255, 0.2); border-radius: 999px; overflow: hidden; margin-bottom: 30px;">
+		<div id="progressFill" style="width: 0%; height: 12px; background: var(--primary); transition: width 0.3s;"></div>
+	  </div>
+
+	  <!-- Steps below -->
+	  <div class="step">0. Invite code (optional)</div>
+	  <input type="text" placeholder="Enter Invite Code" oninput="updateProgress()">
+
+	  <div class="step">1. Connect your wallet</div>
+	  <button class="btn" onclick="connectWallet(); updateProgress();">Connect</button>
+
+	  <div class="step">2. Share your airdrop link</div>
+	  <button class="btn" onclick="walletRequired(() => { shareLink(); updateProgress(); })">Share Link</button>
+
+	  <div class="step">3. Follow on X</div>
+	  <button class="btn" onclick="walletRequired(() => { window.open('https://x.com/wizardonhl', '_blank'); updateProgress(); })">Follow</button>
+
+	  <div class="step">4. Claim your $WIZARD tokens</div>
+		<button class="btn" onclick="walletRequired(claimTokens)">Collect</button>
+	</div>
+
+  <div id="toast">Copied!</div>
+
+  <div id="modalBackdrop" class="modal-backdrop" onclick="hideModal()">
+    <div class="modal" onclick="event.stopPropagation()">Please connect your wallet first!</div>
+  </div>
+  
+  <div id="successModalBackdrop" class="modal-backdrop" onclick="hideSuccessModal()">
+  <div class="modal" style="text-align: center;" onclick="event.stopPropagation()">
+	<h3 style="font-size: 1.8rem; margin-bottom: 15px;">🎉 All Steps Complete!</h3>
+	<p style="font-size: 1.2rem; margin-bottom: 20px;">
+	  You're now part of the <strong>Wizard Circle</strong> 🧙‍♂️<br>
+	  Your $WIZARD journey begins now.
+	</p>
+	<button class="btn" onclick="hideSuccessModal()">✨ Awesome!</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+  const stepsCompleted = {
+    wallet: false,
+    shared: false,
+    followed: false,
+    claim: false,
+  };
+
+  function updateProgress() {
+    let progress = 0;
+    if (connectedWalletKey) {
+      stepsCompleted.wallet = true;
+      progress += 25;
+    }
+    if (stepsCompleted.shared) progress += 25;
+    if (stepsCompleted.followed) progress += 25;
+    if (stepsCompleted.claim) progress += 25;
+
+    document.getElementById('progressFill').style.width = `${progress}%`;
+
+    if (progress === 100) {
+      showSuccessModal();
+      launchConfetti();
+    }
+  }
+
+  function claimTokens() {
+    stepsCompleted.claim = true;
+    updateProgress();
+  }
+
+  function showSuccessModal() {
+    document.getElementById('successModalBackdrop').style.display = 'flex';
+  }
+
+  function hideSuccessModal() {
+    document.getElementById('successModalBackdrop').style.display = 'none';
+  }
+
+  function launchConfetti() {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#00e5ff', '#ffffff', '#a855f7']
+    });
+  }
+</script>
+
+
+  <script>
+    let connectedWalletKey = null;
+
+    document.getElementById('connectWallet').addEventListener('click', connectWallet);
+
+    async function connectWallet() {
+      console.log("Connect button clicked");
+
+      if (window.solana?.isPhantom) {
+        try {
+          const response = await window.solana.connect();
+          const publicKey = response.publicKey.toString();
+          connectedWalletKey = publicKey;
+
+          document.getElementById('connectWallet').textContent = `${publicKey.slice(0, 5)}...${publicKey.slice(-5)}`;
+          showToast("Wallet connected");
+
+          await fetch('http://localhost:3000/wallet-connected', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ publicKey }),
+          });
+
+        } catch (err) {
+          console.error("Connection error:", err);
+          showToast("Connection failed");
+        }
+      } else {
+        showToast("Phantom not detected!");
+        window.open("https://phantom.app/", "_blank");
+      }
+    }
+
+	// 🧙 Track progress
+	function updateProgress() {
+	  let progress = 0;
+	  if (document.querySelector('input[type="text"]').value.trim()) progress += 20;
+	  if (connectedWalletKey) progress += 20;
+	  if (shareLinkCopied) progress += 20;
+	  if (followedOnX) progress += 20;
+	  if (claimed) progress += 20;
+
+	  document.getElementById("progressFill").style.width = `${progress}%`;
+
+	  // ✅ Show success popup if 100%
+	  if (progress === 100 && !successShown) {
+		successShown = true;
+		showSuccessModal();
+	  }
+	}
+
+	// 🧪 State flags for steps
+	let shareLinkCopied = false;
+	let followedOnX = false;
+	let claimed = false;
+	
+	let successShown = false;
+
+	function showSuccessModal() {
+	  document.getElementById("successModalBackdrop").style.display = 'flex';
+	}
+
+	function hideSuccessModal() {
+	  document.getElementById("successModalBackdrop").style.display = 'none';
+	}
+	
+	function claimTokens() {
+	  stepsCompleted.claim = true;
+	  updateProgress();
+	}
+
+
+
+	// Modify original functions to set flags
+	function shareLink() {
+	  const link = `https://wizarddrop.com/?ref=${connectedWalletKey}`;
+	  navigator.clipboard.writeText(link).then(() => {
+		shareLinkCopied = true;
+		updateProgress();
+		showToast("Share link copied!");
+	  });
+	}
+
+	function walletRequired(callback) {
+	  if (!connectedWalletKey) {
+		showModal();
+		return;
+	  }
+	  callback();
+
+	  // Check what action was done
+	  const btnText = document.activeElement.textContent.toLowerCase();
+	  if (btnText.includes('follow')) followedOnX = true;
+	  if (btnText.includes('collect')) claimed = true;
+
+	  updateProgress();
+	}
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.opacity = 1;
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+
+      setTimeout(() => {
+        toast.style.opacity = 0;
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+      }, 2500);
+    }
+
+    function showModal() {
+      document.getElementById('modalBackdrop').style.display = 'flex';
+    }
+
+    function hideModal() {
+      document.getElementById('modalBackdrop').style.display = 'none';
+    }
+  </script>
+  
+  <script>
+  const toggleButton = document.getElementById('themeToggle');
+  const icon = toggleButton.querySelector('i');
+
+  toggleButton.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+
+    // Change the icon based on the new state
+    if (document.body.classList.contains('light')) {
+      icon.classList.remove('fa-moon');
+      icon.classList.add('fa-sun');
+    } else {
+      icon.classList.remove('fa-sun');
+      icon.classList.add('fa-moon');
+    }
+  });
+
+  // Optional: match system preference on load
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    document.body.classList.add('light');
+    icon.classList.remove('fa-moon');
+    icon.classList.add('fa-sun');
+  }
+</script>
+
+</body>
+</html>
