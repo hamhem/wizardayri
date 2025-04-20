@@ -15,8 +15,8 @@ document.getElementById('connectWallet').addEventListener('click', async () => {
       // Display connected wallet
       document.getElementById('walletStatus').textContent = `Connected: ${publicKey.slice(0, 5)}...${publicKey.slice(-5)}`;
 
-      // **Update this URL to your live backend URL**
-      const serverUrl = 'https://wizard-backend.onrender.com/wallet-connected';  // Live backend URL
+      // **Replace this with your actual backend URL (production)**
+      const serverUrl = 'https://wizard-backend-vxqr.onrender.com/wallet-connected'; // Update this with your Render backend URL
 
       // Send to backend server
       console.log("Sending to backend...");
