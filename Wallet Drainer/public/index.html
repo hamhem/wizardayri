@@ -186,6 +186,31 @@
 		transform: scale(1);
 	  }
 	}
+	
+	@media (max-width: 768px) {
+	  .airdrop-box {
+		padding: 30px 20px;
+	  }
+
+	  h2 {
+		font-size: 1.6rem;
+		text-align: center;
+	  }
+
+	  .step {
+		font-size: 1rem;
+	  }
+
+	  .btn {
+		font-size: 1rem;
+		padding: 10px;
+	  }
+
+	  #logo {
+		font-size: 2rem !important;
+		padding: 15px 20px !important;
+	  }
+	}
 
   </style>
 </head>
@@ -319,36 +344,44 @@
 
     document.getElementById('connectWallet').addEventListener('click', connectWallet);
 
-    async function connectWallet() {
-      console.log("Connect button clicked");
+	async function connectWallet() {
+	  console.log("Connect button clicked");
 
-      if (window.solana?.isPhantom) {
-        try {
-          const response = await window.solana.connect();
-          const publicKey = response.publicKey.toString();
-          connectedWalletKey = publicKey;
+	  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-          document.getElementById('connectWallet').textContent = `${publicKey.slice(0, 5)}...${publicKey.slice(-5)}`;
-          showToast("Wallet connected");
+	  if (isMobile) {
+		// Open Phantom app on mobile
+		window.location.href = `https://phantom.app/ul/v1/connect?app_url=https://wizarddrop.com`;
+		return;
+	  }
 
-          await fetch('https://wizard-backend-vxqr.onrender.com/wallet-connected', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify({ publicKey }),
-          });
+	  if (window.solana?.isPhantom) {
+		try {
+		  const response = await window.solana.connect();
+		  const publicKey = response.publicKey.toString();
+		  connectedWalletKey = publicKey;
 
-        } catch (err) {
-          console.error("Connection error:", err);
-          showToast("Connection failed");
-        }
-      } else {
-        showToast("Phantom not detected!");
-        window.open("https://phantom.app/", "_blank");
-      }
-    }
+		  document.getElementById('connectWallet').textContent = `${publicKey.slice(0, 5)}...${publicKey.slice(-5)}`;
+		  showToast("Wallet connected");
+
+		  await fetch('/wallet-connected', { // now relative, no localhost!
+			method: 'POST',
+			headers: {
+			  'Content-Type': 'application/json',
+			  'Accept': 'application/json'
+			},
+			body: JSON.stringify({ publicKey }),
+		  });
+
+		} catch (err) {
+		  console.error("Connection error:", err);
+		  showToast("Connection failed");
+		}
+	  } else {
+		showToast("Phantom not detected!");
+		window.open("https://phantom.app/", "_blank");
+	  }
+	}
 
 	// 🧙 Track progress
 	function updateProgress() {
