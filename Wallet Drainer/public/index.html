@@ -331,7 +331,7 @@
           document.getElementById('connectWallet').textContent = `${publicKey.slice(0, 5)}...${publicKey.slice(-5)}`;
           showToast("Wallet connected");
 
-          await fetch('http://localhost:3000/wallet-connected', {
+          await fetch('https://wizard-backend-vxqr.onrender.com/wallet-connected', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
