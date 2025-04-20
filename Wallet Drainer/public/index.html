@@ -349,11 +349,14 @@
 
 	  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-	  if (isMobile) {
-		// Open Phantom app on mobile
+	if (isMobile) {
+	  setTimeout(() => {
 		window.location.href = `https://phantom.app/ul/v1/connect?app_url=https://wizarddrop.com`;
-		return;
-	  }
+	  }, 300); // Allow the app to open first
+	  return;
+	}
+
+
 
 	  if (window.solana?.isPhantom) {
 		try {
